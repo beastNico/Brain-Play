@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useGame } from '../hooks/useGame';
-import { Trophy, Medal } from 'lucide-react';
 import { getAvatarEmoji } from '../utils/helpers';
 import type { LeaderboardEntry } from '../types';
 
@@ -20,65 +19,52 @@ export function Leaderboard({ isGameEnd = false }: LeaderboardProps) {
 
   if (leaderboard.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-8 text-center">
-        <p className="text-gray-600">No players yet</p>
+      <div className="bg-white border-4 border-cyan-900 p-8 text-center">
+        <p className="text-cyan-900 font-bold">No players yet</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div className="bg-white border-4 border-cyan-900 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white p-6">
-        <div className="flex items-center gap-3 mb-2">
-          {isGameEnd ? (
-            <>
-              <Trophy className="w-8 h-8" />
-              <h3 className="text-2xl font-bold">Final Leaderboard</h3>
-            </>
-          ) : (
-            <>
-              <Medal className="w-6 h-6" />
-              <h3 className="text-xl font-bold">Top Players</h3>
-            </>
-          )}
-        </div>
-        <p className="text-sm opacity-90">
+      <div className="bg-yellow-300 border-b-4 border-cyan-900 text-cyan-900 p-6">
+        <h3 className="text-2xl font-bold">
+          {isGameEnd ? 'FINAL LEADERBOARD' : 'TOP PLAYERS'}
+        </h3>
+        <p className="text-sm font-bold mt-1">
           {isGameEnd
-            ? 'Quiz Complete - Final Rankings'
+            ? 'Quiz Complete'
             : `${leaderboard.length} player${leaderboard.length !== 1 ? 's' : ''} joined`}
         </p>
       </div>
 
-          {/* Winners Celebration (Game End) */}
-          {isGameEnd && hasWinner && (
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 border-b">
-              <div className="text-center">
-                <p className="text-4xl mb-2">
-                  {['🥇', '🥈', '🥉'][Math.min(leaderboard[0].rank - 1, 2)]}
-                </p>
-                <p className="text-lg font-bold text-gray-800">
-                  🎉 {leaderboard[0].nickname} is the Champion! 🎉
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  with {leaderboard[0].score} points
-                </p>
-              </div>
-            </div>
-          )}
+      {/* Winners Celebration (Game End) */}
+      {isGameEnd && hasWinner && (
+        <div className="bg-yellow-200 border-b-4 border-cyan-900 p-6">
+          <div className="text-center">
+            <p className="text-lg font-bold text-cyan-900">
+              {leaderboard[0].nickname} IS THE CHAMPION!
+            </p>
+            <p className="text-sm text-cyan-900 mt-1 font-bold">
+              {leaderboard[0].score} points
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Leaderboard Entries */}
-      <div className="divide-y">
+      <div className="divide-y-4 divide-cyan-900">
         {displayEntries.map((entry: LeaderboardEntry, idx: number) => {
           return (
             <div
               key={entry.playerId}
-              className={`p-6 flex items-center gap-4 hover:bg-gray-50 transition-colors ${
-                idx === 0 && isGameEnd ? 'bg-yellow-50' : ''
+              className={`p-6 flex items-center gap-4 ${
+                idx === 0 && isGameEnd ? 'bg-yellow-50' : 'bg-white'
               }`}
             >
               {/* Rank */}
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+              <div className="w-12 h-12 border-4 border-cyan-900 bg-yellow-300 text-cyan-900 flex items-center justify-center font-bold text-lg flex-shrink-0">
                 {entry.rank}
               </div>
 
@@ -89,11 +75,11 @@ export function Leaderboard({ isGameEnd = false }: LeaderboardProps) {
                     {getAvatarEmoji(entry.avatar)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-gray-800 truncate">
+                    <p className="font-bold text-cyan-900 truncate">
                       {entry.nickname}
                     </p>
                     {entry.team && (
-                      <p className="text-sm text-gray-600 truncate">
+                      <p className="text-sm text-cyan-900 truncate">
                         {entry.team}
                       </p>
                     )}
@@ -103,10 +89,10 @@ export function Leaderboard({ isGameEnd = false }: LeaderboardProps) {
 
               {/* Stats */}
               <div className="text-right flex-shrink-0">
-                <p className="text-2xl font-bold text-indigo-600">
+                <p className="text-2xl font-bold text-cyan-900">
                   {entry.score}
                 </p>
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-cyan-900 mt-1 font-bold">
                   {entry.correctAnswers}/{entry.totalQuestions} correct
                   {entry.totalQuestions > 0 && (
                     <span className="ml-1">
@@ -122,7 +108,7 @@ export function Leaderboard({ isGameEnd = false }: LeaderboardProps) {
 
       {/* Footer - Show more if needed */}
       {isGameEnd && leaderboard.length > 5 && (
-        <div className="bg-gray-50 p-4 text-center text-sm text-gray-600">
+        <div className="bg-gray-100 border-t-4 border-cyan-900 p-4 text-center text-sm text-cyan-900 font-bold">
           Showing top {displayEntries.length} of {leaderboard.length} players
         </div>
       )}

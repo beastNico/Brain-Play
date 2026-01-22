@@ -18,7 +18,7 @@ function AppContent() {
     if (currentQuiz?.status === 'finished' && view === 'quiz-play') {
       setView('game-end');
     }
-  }, [currentQuiz?.status, view]);
+  }, [currentQuiz?.status]);
 
   return (
     <div className="min-h-screen">
@@ -42,16 +42,16 @@ function AppContent() {
         <QuizPlay />
       )}
       {view === 'game-end' && (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+        <div className="min-h-screen bg-cyan-200 p-6 border-4 border-cyan-900">
           <div className="max-w-2xl mx-auto">
             <Leaderboard isGameEnd={true} />
             <button
               onClick={() => {
                 setView('landing');
               }}
-              className="w-full mt-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-colors"
+              className="w-full mt-8 bg-yellow-300 hover:bg-yellow-200 text-cyan-900 font-bold py-4 px-6 border-4 border-cyan-900 transition-colors"
             >
-              ← Back to Home
+              BACK TO HOME
             </button>
           </div>
         </div>

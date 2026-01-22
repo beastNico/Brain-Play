@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useReducer } from 'react';
 import { useGame } from '../hooks/useGame';
-import { Clock, Medal } from 'lucide-react';
 import { gameSessionService } from '../services/gameSession';
 import { getAvatarEmoji } from '../utils/helpers';
 
@@ -78,7 +77,7 @@ export function QuizPlay() {
       answerStartTimeRef.current = Date.now();
       dispatch({ type: 'RESET_QUESTION' });
     }
-  }, [currentQuiz?.currentQuestionIndex]);
+  }, [currentQuiz?.currentQuestionIndex, currentQuiz]);
 
   // Handle answer submission
   const handleAnswerSelect = useCallback(async (answer: 'A' | 'B' | 'C' | 'D') => {
@@ -124,7 +123,7 @@ export function QuizPlay() {
 
     const timer: ReturnType<typeof setInterval> = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [quizState.timeLeft, currentQuiz]);
+  }, [quizState.timeLeft, quizState.showResults, currentQuiz]);
 
   // Auto-advance to next question after showing results for 10 seconds
   useEffect(() => {
@@ -205,15 +204,15 @@ export function QuizPlay() {
     quizState.timeLeft > 5 ? 'bg-green-500' : quizState.timeLeft > 3 ? 'bg-yellow-500' : 'bg-red-500';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+    <div className="min-h-screen bg-cyan-200 p-4 border-4 border-cyan-900">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-gray-600 text-sm">Question {currentQuiz.currentQuestionIndex + 1} of {currentQuiz.questions.length}</p>
-            <div className="w-48 h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
+            <p className="text-cyan-900 text-sm font-bold">Question {currentQuiz.currentQuestionIndex + 1} of {currentQuiz.questions.length}</p>
+            <div className="w-48 h-4 bg-white border-2 border-cyan-900 overflow-hidden mt-2">
               <div
-                className="h-full bg-indigo-600 transition-all"
+                className="h-full bg-yellow-400 transition-all"
                 style={{
                   width: `${((currentQuiz.currentQuestionIndex + 1) / currentQuiz.questions.length) * 100}%`,
                 }}
@@ -222,26 +221,25 @@ export function QuizPlay() {
           </div>
           {!isAdmin && (
             <div className="text-right">
-              <p className="text-gray-600 text-sm">Your Score</p>
-              <p className="text-3xl font-bold text-indigo-600">{playerScore}</p>
+              <p className="text-cyan-900 text-sm font-bold">YOUR SCORE</p>
+              <p className="text-3xl font-bold text-cyan-900">{playerScore}</p>
             </div>
           )}
         </div>
 
         {/* Timer */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div className="bg-white border-4 border-cyan-900 p-6 mb-6">
           <div className="flex items-center gap-4">
-            <Clock className="w-6 h-6 text-indigo-600" />
             <div className="flex-1">
-              <p className="text-gray-600 text-sm mb-2">Time Remaining</p>
+              <p className="text-cyan-900 text-sm mb-2 font-bold">TIME REMAINING</p>
               <div className="flex items-center gap-4">
-                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-white border-2 border-cyan-900 h-4 overflow-hidden">
                   <div
-                    className={`h-full transition-all ${timeBarColor}`}
+                    className={`h-full transition-all ${timeBarColor === 'bg-green-500' ? 'bg-green-600' : timeBarColor === 'bg-yellow-500' ? 'bg-yellow-400' : 'bg-red-600'}`}
                     style={{ width: `${(quizState.timeLeft / QUESTION_TIME) * 100}%` }}
                   ></div>
                 </div>
-                <span className={`text-2xl font-bold w-12 text-right ${quizState.timeLeft <= 5 ? 'text-red-600' : 'text-indigo-600'}`}>
+                <span className={`text-2xl font-bold w-12 text-right ${quizState.timeLeft <= 5 ? 'text-red-600' : 'text-cyan-900'}`}>
                   {quizState.timeLeft}s
                 </span>
               </div>
@@ -250,80 +248,83 @@ export function QuizPlay() {
         </div>
 
         {/* Question */}
-        <div className="bg-white rounded-xl shadow-md p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-8">{currentQuestion.text}</h2>
+        <div className="bg-white border-4 border-cyan-900 p-8 mb-6">
+          <h2 className="text-2xl font-bold text-cyan-900 mb-8">{currentQuestion.text}</h2>
           
           {isAdmin && (
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-              <p className="text-purple-700 font-medium">👑 Host Mode</p>
-              <p className="text-sm text-purple-600">The correct answer is: <span className="font-bold">{currentQuestion.correctAnswer}</span></p>
+            <div className="bg-yellow-300 border-4 border-cyan-900 p-4 mb-4">
+              <p className="text-cyan-900 font-bold">HOST MODE</p>
+              <p className="text-sm text-cyan-900">Correct answer: {currentQuestion.correctAnswer}</p>
             </div>
           )}
 
           {!isAdmin && !quizState.showResults && (
-            <p className="text-sm text-gray-500 mb-4">
-              💡 Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">A</kbd>, <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">B</kbd>, <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">C</kbd>, or <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">D</kbd> to select an answer quickly
+            <p className="text-sm text-cyan-900 mb-4 font-bold">
+              Press A, B, C, or D to answer quickly
             </p>
           )}
 
           {/* Options - Only show for players */}
           {!isAdmin && (
           <div className="grid grid-cols-1 gap-4">
-            {(['A', 'B', 'C', 'D'] as const).map((option) => (
-              <button
-                key={option}
-                onClick={() => handleAnswerSelect(option)}
-                disabled={quizState.showResults}
-                className={`p-4 rounded-lg text-left transition-all transform hover:scale-102 ${
-                  quizState.selectedAnswer === option && option === currentQuestion.correctAnswer
-                    ? 'ring-2 ring-green-500 bg-green-100 border border-green-300'
-                    : quizState.selectedAnswer === option && option !== currentQuestion.correctAnswer
-                    ? 'ring-2 ring-red-500 bg-red-100 border border-red-300'
-                    : quizState.showResults && option === currentQuestion.correctAnswer
-                    ? 'ring-2 ring-green-500 bg-green-100 border border-green-300'
-                    : 'bg-gray-50 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
-                }`}
-                aria-label={`Option ${option}: ${getOptionText(option)}`}
-                aria-disabled={quizState.showResults}
-              >
-                <p className="font-bold text-indigo-600 mb-1">{option}</p>
-                <p className="text-gray-800">{getOptionText(option)}</p>
-              </button>
-            ))}
+            {(['A', 'B', 'C', 'D'] as const).map((option) => {
+              const isSelected = quizState.selectedAnswer === option;
+              const isCorrect = option === currentQuestion.correctAnswer;
+              const showCorrectAnswer = quizState.showResults && isCorrect;
+              
+              return (
+                <button
+                  key={option}
+                  onClick={() => handleAnswerSelect(option)}
+                  disabled={quizState.showResults}
+                  className={`p-4 border-4 transition-all text-left font-bold ${
+                    isSelected && isCorrect
+                      ? 'bg-green-300 border-green-900 text-green-900'
+                      : isSelected && !isCorrect
+                      ? 'bg-red-300 border-red-900 text-red-900'
+                      : showCorrectAnswer
+                      ? 'bg-green-300 border-green-900 text-green-900'
+                      : 'bg-white border-cyan-900 text-cyan-900 hover:bg-yellow-100'
+                  }`}
+                  aria-label={`Option ${option}`}
+                  aria-disabled={quizState.showResults}
+                >
+                  <p className="font-bold mb-1">{option}</p>
+                  <p>{getOptionText(option)}</p>
+                </button>
+              );
+            })}
           </div>
           )}
         </div>
 
-        {/* Results Feedback */}
-        {quizState.showResults && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6 animate-slideIn">
+        {/* Results Feedback - Only for players */}
+        {!isAdmin && quizState.showResults && (
+          <div className="bg-white border-4 border-cyan-900 p-6 mb-6">
             <div className={`text-center ${quizState.selectedAnswer === currentQuestion.correctAnswer ? 'text-green-600' : 'text-red-600'}`}>
               {quizState.selectedAnswer === currentQuestion.correctAnswer ? (
                 <>
-                  <p className="text-5xl mb-2">🎉</p>
-                  <p className="text-2xl font-bold">Correct!</p>
+                  <p className="text-3xl mb-2 font-bold">CORRECT!</p>
                 </>
               ) : (
                 <>
-                  <p className="text-5xl mb-2">😅</p>
-                  <p className="text-2xl font-bold">Wrong Answer</p>
-                  <p className="text-sm text-gray-600 mt-2">
-                    The correct answer is <span className="font-bold">{currentQuestion.correctAnswer}</span>
-                  </p>
+                  <p className="text-3xl mb-2 font-bold">WRONG!</p>
                 </>
               )}
             </div>
+            <div className="mt-6 text-center text-cyan-900 font-bold">
+              <p>Next question loading...</p>
+            </div>
+          </div>
+        )}
 
-            {!isAdmin && (
-              <div className="mt-6 text-center text-gray-600">
-                <p>Auto-advancing to next question...</p>
-              </div>
-            )}
-            {isAdmin && (
-              <div className="mt-6 text-center text-gray-600">
-                <p>Auto-advancing to next question...</p>
-              </div>
-            )}
+        {/* Admin Results - Shows auto-advance message only */}
+        {isAdmin && quizState.showResults && (
+          <div className="bg-white border-4 border-cyan-900 p-6 mb-6">
+            <div className="text-center text-cyan-900 font-bold">
+              <p>Results shown to players</p>
+              <p className="text-sm mt-2">Next question loading...</p>
+            </div>
           </div>
         )}
 
@@ -350,21 +351,18 @@ function LiveLeaderboard({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden">
-      <div className="bg-gradient-to-r from-amber-500 to-yellow-600 text-white p-4">
-        <div className="flex items-center gap-2">
-          <Medal className="w-5 h-5" />
-          <h3 className="font-bold">Live Leaderboard</h3>
-        </div>
+    <div className="bg-white border-4 border-cyan-900 overflow-hidden">
+      <div className="bg-yellow-300 border-b-4 border-cyan-900 text-cyan-900 p-4">
+        <h3 className="font-bold">LIVE LEADERBOARD</h3>
       </div>
-      <div className="divide-y">
+      <div className="divide-y-4 divide-cyan-900">
         {displayEntries.map((entry) => (
           <div
             key={entry.playerId}
-            className="p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+            className="p-4 flex items-center gap-3 bg-white hover:bg-gray-100 transition-colors"
           >
             {/* Rank */}
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+            <div className="w-10 h-10 border-4 border-cyan-900 text-cyan-900 flex items-center justify-center font-bold text-sm flex-shrink-0 bg-yellow-300">
               {entry.rank}
             </div>
 
@@ -375,7 +373,7 @@ function LiveLeaderboard({ isAdmin }: { isAdmin: boolean }) {
                   {getAvatarEmoji(entry.avatar)}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold text-gray-800 truncate text-sm">
+                  <p className="font-bold text-cyan-900 truncate text-sm">
                     {entry.nickname}
                   </p>
                 </div>
@@ -384,7 +382,7 @@ function LiveLeaderboard({ isAdmin }: { isAdmin: boolean }) {
 
             {/* Score */}
             <div className="text-right flex-shrink-0">
-              <p className="text-lg font-bold text-indigo-600">{entry.score}</p>
+              <p className="text-lg font-bold text-cyan-900">{entry.score}</p>
             </div>
           </div>
         ))}

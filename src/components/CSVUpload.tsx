@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import type { Question } from '../types';
 import { validateCSV, convertRowsToQuestions } from '../utils/helpers';
 
@@ -97,10 +96,10 @@ export function CSVUpload({ onQuestionsLoaded }: CSVUploadProps) {
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        className={`relative p-8 border-2 border-dashed rounded-xl text-center transition-all ${
+        className={`relative p-8 border-4 text-center transition-all ${
           dragActive
-            ? 'border-indigo-600 bg-indigo-50'
-            : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+            ? 'border-cyan-900 bg-yellow-100'
+            : 'border-cyan-900 bg-white hover:bg-gray-50'
         }`}
       >
         <input
@@ -112,30 +111,27 @@ export function CSVUpload({ onQuestionsLoaded }: CSVUploadProps) {
           disabled={loading}
         />
         <label htmlFor="csv-upload" className="cursor-pointer block">
-          <Upload className="w-12 h-12 text-indigo-600 mx-auto mb-3" />
-          <p className="text-lg font-semibold text-gray-700 mb-1">
-            {loading ? 'Processing...' : 'Upload Quiz CSV'}
+          <p className="text-lg font-bold text-cyan-900 mb-1">
+            {loading ? 'PROCESSING...' : 'UPLOAD QUIZ CSV'}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-cyan-900 font-bold">
             Drag & drop or click to select
           </p>
-          <p className="text-xs text-gray-400 mt-2">
-            Required columns: Question, Option A, Option B, Option C, Option D, Correct Answer
+          <p className="text-xs text-cyan-900 mt-2 font-bold">
+            Question, Option A-D, Correct Answer
           </p>
         </label>
       </div>
 
       {error && (
-        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-800 whitespace-pre-wrap">{error}</p>
+        <div className="mt-4 p-4 bg-red-300 border-4 border-red-900">
+          <p className="text-sm text-red-900 font-bold whitespace-pre-wrap">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex gap-3 animate-slideIn">
-          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-green-800">Questions loaded successfully! ✨</p>
+        <div className="mt-4 p-4 bg-green-300 border-4 border-green-900">
+          <p className="text-sm text-green-900 font-bold">Questions loaded successfully!</p>
         </div>
       )}
     </div>
